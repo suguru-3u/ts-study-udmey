@@ -40,3 +40,7 @@ function merge2<T extends Object, U extends Object>(objA: T, objB: U) {
 
 const mergeObj2 = merge2({ name: "Max" }, { age: 28 });
 console.log(mergeObj.age);
+
+/**
+ * もう一つのGenercic関数
+ */
