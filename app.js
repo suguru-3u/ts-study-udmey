@@ -1,15 +1,14 @@
+"use strict";
 /**
- * unkown
- * nerver
+ * JSにはinterfaceは存在しない
+ *
  */
-var userInput;
-var userName;
-userInput = 5;
-userInput = "Max";
-if (typeof userInput === "string") {
-    userName = userInput;
-}
-function generateError(message, code) {
-    throw { message: message, errorCode: code };
-}
-generateError("エラーが発生しました", 10);
+let user1;
+user1 = {
+    name: "Max",
+    age: 33,
+    greet(phrase) {
+        console.log(phrase + "Hello");
+    },
+};
+user1.greet("MUN");

@@ -23,4 +23,4 @@ combineValues = add;
 
 console.log(combineValues(8, 8));
 
-printResult(add(3, 4));
+// printResult(add(3, 4));
