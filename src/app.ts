@@ -44,3 +44,92 @@ console.log(mergeObj.age);
 /**
  * もう一つのGenercic関数
  */
+
+interface Length {
+  length: number;
+}
+
+function countAndDescribe<T extends Length>(element: T): [T, string] {
+  let des = "値がありません";
+  if (element.length > 0) {
+    des = "値は" + element.length + "個です";
+  }
+  return [element, des];
+}
+
+console.log(countAndDescribe("aaaaaaa"));
+console.log(countAndDescribe(""));
+
+/**
+ * keyofの制約
+ */
+
+function extractAndCover<T extends object, U extends keyof T>(obj: T, key: U) {
+  return "value" + obj[key];
+}
+
+// ↓↓エラーになる
+// extractAndCover({}, "name");
+extractAndCover({ name: "Max" }, "name");
+
+/**
+ * Generic クラス
+ */
+
+class DataStorage<T> {
+  private data: T[] = [];
+
+  addItem(item: T) {
+    this.data.push(item);
+  }
+
+  removeItem(item: T) {
+    this.data.splice(this.data.indexOf(item), 1);
+  }
+
+  getItems() {
+    return [...this.data];
+  }
+}
+
+const tesxtStroge = new DataStorage<string>();
+tesxtStroge.addItem("data1");
+console.log(tesxtStroge.getItems());
+
+const numberStroge = new DataStorage<number>();
+
+const objectStroge = new DataStorage<object>();
+objectStroge.addItem({ name: "Max" });
+objectStroge.addItem({ name: "Max" });
+objectStroge.addItem({ name: "Max" });
+console.log(objectStroge.getItems);
+
+/**
+ * Generic型のユーティリティ
+ * Partial型、Readonly(読み取り専用)
+ */
+
+interface CourseGoal {
+  title: string;
+  description: string;
+  completeUntil: Date;
+}
+
+function createCourseGoal(
+  title: string,
+  description: string,
+  data: Date
+): CourseGoal {
+  let courseGoal: Partial<CourseGoal> = {};
+  courseGoal.title = title;
+  courseGoal.description = description;
+  courseGoal.completeUntil = data;
+  return courseGoal as CourseGoal;
+}
+
+const namess: Readonly<string[]> = ["Max", "Min"];
+namess.push("Manu");
+
+/**
+ * Gneric型 VS Union型
+ */
