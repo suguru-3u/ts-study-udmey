@@ -1,90 +1,104 @@
 "use strict";
 /**
- * ジェネリクスとは何か？
- * ⇨追加の型情報を提供できる = TypeScriptのサポートを受けることができる
- * 組み込み型Generics
- * (Promiseとは何か調べる必要がある)
+ * クラスデコレーター
  */
-// Array
-const names = [];
-// Promise
-const promise = new Promise((resolve, reject) => {
-    setTimeout(() => {
-        resolve("終わりました!");
-    }, 2000);
-});
-promise.then((data) => {
-    data.split(" ");
-});
-/**
- * Generics関数の作成
- */
-function merge(objA, objB) {
-    return Object.assign(objA, objB);
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+// ↓↓デコレーター(クラスに対して)
+// クラスの定義を見つけた際に処理が動く
+function Logger(constructor) {
+    console.log("ログ出力中");
+    console.log(constructor);
 }
-const mergeObj = merge({ name: "Max" }, { age: 28 });
-console.log(mergeObj.age);
-/**
- * Genericsに制約を追加する
- */
-function merge2(objA, objB) {
-    return Object.assign(objA, objB);
-}
-const mergeObj2 = merge2({ name: "Max" }, { age: 28 });
-console.log(mergeObj.age);
-function countAndDescribe(element) {
-    let des = "値がありません";
-    if (element.length > 0) {
-        des = "値は" + element.length + "個です";
-    }
-    return [element, des];
-}
-console.log(countAndDescribe("aaaaaaa"));
-console.log(countAndDescribe(""));
-/**
- * keyofの制約
- */
-function extractAndCover(obj, key) {
-    return "value" + obj[key];
-}
-// ↓↓エラーになる
-// extractAndCover({}, "name");
-extractAndCover({ name: "Max" }, "name");
-/**
- * Generic クラス
- */
-class DataStorage {
+let Person5 = class Person5 {
     constructor() {
-        this.data = [];
+        this.name = "Max";
+        console.log("Personクラスを作成中");
     }
-    addItem(item) {
-        this.data.push(item);
-    }
-    removeItem(item) {
-        this.data.splice(this.data.indexOf(item), 1);
-    }
-    getItems() {
-        return [...this.data];
-    }
-}
-const tesxtStroge = new DataStorage();
-tesxtStroge.addItem("data1");
-console.log(tesxtStroge.getItems());
-const numberStroge = new DataStorage();
-const objectStroge = new DataStorage();
-objectStroge.addItem({ name: "Max" });
-objectStroge.addItem({ name: "Max" });
-objectStroge.addItem({ name: "Max" });
-console.log(objectStroge.getItems);
-function createCourseGoal(title, description, data) {
-    let courseGoal = {};
-    courseGoal.title = title;
-    courseGoal.description = description;
-    courseGoal.completeUntil = data;
-    return courseGoal;
-}
-const namess = ["Max", "Min"];
-namess.push("Manu");
+};
+Person5 = __decorate([
+    Logger
+], Person5);
+const parts = new Person5();
+console.log(parts);
 /**
- * Gneric型 VS Union型
+ * デコレーターファクトリー
  */
+function Logger2(logStriing) {
+    return function (constructor) {
+        console.log(logStriing);
+        console.log(constructor);
+    };
+}
+let Person6 = class Person6 {
+    constructor() {
+        this.name = "Max";
+        console.log("Personクラスを作成中");
+    }
+};
+Person6 = __decorate([
+    Logger2("ログ出力中")
+], Person6);
+/**
+ * 便利なデコレーター
+ */
+function WithTemplate(template, hookId) {
+    console.log("!!!!!");
+    return function (_) {
+        const hookEl = document.getElementById(hookId);
+        if (hookEl) {
+            hookEl.innerHTML = template;
+        }
+    };
+}
+// @WithTemplate("<h1>Hello TypeScript</h1>", "up")
+class Person7 {
+    constructor() {
+        this.name = "Max";
+        console.log("Personクラスを作成中");
+    }
+}
+/**
+ * 複数のデコレーターの追加
+ */
+let Person9 = class Person9 {
+    constructor() {
+        this.name = "Max";
+        console.log("Personクラスを作成中");
+    }
+};
+Person9 = __decorate([
+    Logger2("ログ出力中2"),
+    WithTemplate("<h1>Hello TypeScript</h1>", "up")
+], Person9);
+/**
+ * プロパティーデコレーターの詳細
+ */
+function Log(target, propertyName) {
+    console.log("プロパティデコレーター");
+    console.log(target, propertyName);
+}
+class Person10 {
+    constructor(name, age) {
+        this.name = name;
+        this._age = age;
+    }
+    set setAge(val) {
+        if (val > 0) {
+            this._age = val;
+        }
+        else {
+            throw new Error("値が不正です");
+        }
+    }
+    getTaxAge(tax) {
+        return this._age * (1 + tax);
+    }
+}
+__decorate([
+    Log
+], Person10.prototype, "name", void 0);

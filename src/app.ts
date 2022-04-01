@@ -1,135 +1,111 @@
 /**
- * ジェネリクスとは何か？
- * ⇨追加の型情報を提供できる = TypeScriptのサポートを受けることができる
- * 組み込み型Generics
- * (Promiseとは何か調べる必要がある)
+ * クラスデコレーター
  */
 
-// Array
-const names: Array<string | number> = [];
-
-// Promise
-const promise = new Promise<string>((resolve, reject) => {
-  setTimeout(() => {
-    resolve("終わりました!");
-  }, 2000);
-});
-
-promise.then((data) => {
-  data.split(" ");
-});
-
-/**
- * Generics関数の作成
- */
-
-function merge<T, U>(objA: T, objB: U) {
-  return Object.assign(objA, objB);
+// ↓↓デコレーター(クラスに対して)
+// クラスの定義を見つけた際に処理が動く
+function Logger(constructor: Function) {
+  console.log("ログ出力中");
+  console.log(constructor);
 }
 
-const mergeObj = merge({ name: "Max" }, { age: 28 });
-console.log(mergeObj.age);
+@Logger
+class Person5 {
+  name = "Max";
 
-/**
- * Genericsに制約を追加する
- */
-
-function merge2<T extends Object, U extends Object>(objA: T, objB: U) {
-  return Object.assign(objA, objB);
-}
-
-const mergeObj2 = merge2({ name: "Max" }, { age: 28 });
-console.log(mergeObj.age);
-
-/**
- * もう一つのGenercic関数
- */
-
-interface Length {
-  length: number;
-}
-
-function countAndDescribe<T extends Length>(element: T): [T, string] {
-  let des = "値がありません";
-  if (element.length > 0) {
-    des = "値は" + element.length + "個です";
-  }
-  return [element, des];
-}
-
-console.log(countAndDescribe("aaaaaaa"));
-console.log(countAndDescribe(""));
-
-/**
- * keyofの制約
- */
-
-function extractAndCover<T extends object, U extends keyof T>(obj: T, key: U) {
-  return "value" + obj[key];
-}
-
-// ↓↓エラーになる
-// extractAndCover({}, "name");
-extractAndCover({ name: "Max" }, "name");
-
-/**
- * Generic クラス
- */
-
-class DataStorage<T> {
-  private data: T[] = [];
-
-  addItem(item: T) {
-    this.data.push(item);
-  }
-
-  removeItem(item: T) {
-    this.data.splice(this.data.indexOf(item), 1);
-  }
-
-  getItems() {
-    return [...this.data];
+  constructor() {
+    console.log("Personクラスを作成中");
   }
 }
 
-const tesxtStroge = new DataStorage<string>();
-tesxtStroge.addItem("data1");
-console.log(tesxtStroge.getItems());
-
-const numberStroge = new DataStorage<number>();
-
-const objectStroge = new DataStorage<object>();
-objectStroge.addItem({ name: "Max" });
-objectStroge.addItem({ name: "Max" });
-objectStroge.addItem({ name: "Max" });
-console.log(objectStroge.getItems);
+const parts = new Person5();
+console.log(parts);
 
 /**
- * Generic型のユーティリティ
- * Partial型、Readonly(読み取り専用)
+ * デコレーターファクトリー
  */
 
-interface CourseGoal {
-  title: string;
-  description: string;
-  completeUntil: Date;
+function Logger2(logStriing: string) {
+  return function (constructor: Function) {
+    console.log(logStriing);
+    console.log(constructor);
+  };
 }
 
-function createCourseGoal(
-  title: string,
-  description: string,
-  data: Date
-): CourseGoal {
-  let courseGoal: Partial<CourseGoal> = {};
-  courseGoal.title = title;
-  courseGoal.description = description;
-  courseGoal.completeUntil = data;
-  return courseGoal as CourseGoal;
-}
+@Logger2("ログ出力中")
+class Person6 {
+  name = "Max";
 
-const namess: Readonly<string[]> = ["Max", "Min"];
-namess.push("Manu");
+  constructor() {
+    console.log("Personクラスを作成中");
+  }
+}
 
 /**
- * Gneric型 VS Union型
+ * 便利なデコレーター
  */
+
+function WithTemplate(template: string, hookId: string) {
+  console.log("!!!!!");
+  return function (_: Function) {
+    const hookEl = document.getElementById(hookId);
+    if (hookEl) {
+      hookEl.innerHTML = template;
+    }
+  };
+}
+
+// @WithTemplate("<h1>Hello TypeScript</h1>", "up")
+class Person7 {
+  name = "Max";
+
+  constructor() {
+    console.log("Personクラスを作成中");
+  }
+}
+
+/**
+ * 複数のデコレーターの追加
+ */
+
+@Logger2("ログ出力中2")
+@WithTemplate("<h1>Hello TypeScript</h1>", "up")
+class Person9 {
+  name = "Max";
+
+  constructor() {
+    console.log("Personクラスを作成中");
+  }
+}
+
+/**
+ * プロパティーデコレーターの詳細
+ */
+
+function Log(target: any, propertyName: string | Symbol) {
+  console.log("プロパティデコレーター");
+  console.log(target, propertyName);
+}
+
+class Person10 {
+  @Log
+  name: string;
+  private _age: number;
+
+  set setAge(val: number) {
+    if (val > 0) {
+      this._age = val;
+    } else {
+      throw new Error("値が不正です");
+    }
+  }
+
+  constructor(name: string, age: number) {
+    this.name = name;
+    this._age = age;
+  }
+
+  getTaxAge(tax: number) {
+    return this._age * (1 + tax);
+  }
+}
